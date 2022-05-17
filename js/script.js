@@ -147,82 +147,163 @@ window.addEventListener('DOMContentLoaded', function() {
 
     let form = document.querySelector('.main-form'),
         input = form.getElementsByTagName('input'),
+        formBattom = document.querySelector('#form');
         statusMessage = document.createElement('div');
-
         statusMessage.classList.add('status');
 
-    form.addEventListener('submit', function(event) {
-        event.preventDefault();
-        form.appendChild(statusMessage);
+    function sendForm(elem) {
+        elem.addEventListener('submit', function(event) {
+            event.preventDefault();
+            elem.appendChild(statusMessage);
 
-        let request = new XMLHttpRequest();
-        request.open('POST', 'server.php');
-        request.setRequestHeader('Content-type', 'application/json; charset=utf-8');
+            let formData = new FormData(elem);
 
-        let formData = new FormData(form);
-        console.log(formData);
+            function postData(data) {
 
-        let obj = {};
-        formData.forEach(function(value, key) {
-            obj[key] = value;
-        });
+                return new Promise(function(resolve, reject) {
 
-        let json = JSON.stringify(obj);
+                    let request = new XMLHttpRequest();
+                        request.open('POST', 'server.php');
+                        request.setRequestHeader('Content-type', 'application/json; charset=utf-8');
 
-            request.send(json);
+                    request.onreadystatechange = function() {
+                        if (request.readyState < 4) {
+                            resolve()
+                        } else if (request.readyState === 4) {
+                            if (request.status == 200 && request.status <300) {
+                                resolve()
+                            } else {
+                                reject()
+                            }
+                        }
+                    }
 
-            request.addEventListener('readystatechange', function() {
-                if (request.readyState < 4) {
-                    statusMessage.innerHTML = message.loading;
-                } else if (request.readyState === 4 && request.status == 200) {
-                    statusMessage.innerHTML = message.success;
-                } else {
-                    statusMessage.innerHTML = message.failure;
+                    request.send(data);
+                });
+            } // End postData
+
+            function clearInput() {
+                for (let i = 0; i < input.length; i++) {
+                    input[i].value = '';
                 }
-            });
+            }
 
-        for (let i = 0; i < input.length; i++) {
-            input[i].value = '';
-        }
-    });
-
-    let form2 = document.querySelector('#form'),
-        input2 = form2.getElementsByTagName('input');
-
-    form2.addEventListener('submit', function(event) {
-        event.preventDefault();
-        form2.appendChild(statusMessage);
-
-        let request = new XMLHttpRequest();
-        request.open('POST', 'server.php');
-        request.setRequestHeader('Content-type', 'application/json; charset=utf-8');
-
-        let formData = new FormData(form2);
-        console.log(formData);
-
-        let obj = {};
-        formData.forEach(function(value, key) {
-            obj[key] = value;
+            postData(formData)
+                .then(() => statusMessage.innerHTML = message.loading)
+                .then(() => statusMessage.innerHTML = message.success)
+                .catch(() => statusMessage.innerHTML = message.failure)
+                .then(clearInput)
         });
+    };
 
-        let json = JSON.stringify(obj);
+    sendForm(form);
+    sendForm(formBattom);
 
-            request.send(json);
+    // function sendForm(elem) {
+    //     elem.addEventListener('submit', function(event) {
+    //         event.preventDefault();
+    //         elem.appendChild(statusMessage);
 
-            request.addEventListener('readystatechange', function() {
-                if (request.readyState < 4) {
-                    statusMessage.innerHTML = message.loading;
-                } else if (request.readyState === 4 && request.status == 200) {
-                    statusMessage.innerHTML = message.success;
-                } else {
-                    statusMessage.innerHTML = message.failure;
-                }
-            });
+    //         let request = new XMLHttpRequest();
+    //         request.open('POST', 'server.php');
+    //         request.setRequestHeader('Content-type', 'application/json; charset=utf-8');
 
-        for (let i = 0; i < input2.length; i++) {
-            input2[i].value = '';
-        }    
-    });
+    //         let formData = new FormData(elem);
+
+    //         request.send(formData);
+
+    //         request.addEventListener('readystatechange', function() {
+    //             if (request.readyState <4) {
+    //                 statusMessage.innerHTML = message.loading;
+    //             } else if (request.readyState === 4) {
+    //                 if (request.status == 200 && request.status < 300) {
+    //                     statusMessage.innerHTML = message.success;
+    //                 }
+    //             } else {
+    //                 statusMessage.innerHTML = message.failure;
+    //             }
+    //         });
+
+    //         for (let i = 0; i < input.length; i++) {
+    //             input[i].value = '';
+    //         }
+    //     });
+    // };
+
+    
+
+
+
+    // form.addEventListener('submit', function(event) {
+    //     event.preventDefault();
+    //     form.appendChild(statusMessage);
+
+    //     let request = new XMLHttpRequest();
+    //     request.open('POST', 'server.php');
+    //     request.setRequestHeader('Content-type', 'application/json; charset=utf-8');
+
+    //     let formData = new FormData(form);
+
+    //     let obj = {};
+    //     formData.forEach(function(value, key) {
+    //         obj[key] = value;
+    //     });
+
+    //     let json = JSON.stringify(obj);
+
+    //         request.send(json);
+
+    //         request.addEventListener('readystatechange', function() {
+    //             if (request.readyState < 4) {
+    //                 statusMessage.innerHTML = message.loading;
+    //             } else if (request.readyState === 4 && request.status == 200) {
+    //                 statusMessage.innerHTML = message.success;
+    //             } else {
+    //                 statusMessage.innerHTML = message.failure;
+    //             }
+    //         });
+
+    //     for (let i = 0; i < input.length; i++) {
+    //         input[i].value = '';
+    //     }
+    // });
+
+    // let form2 = document.querySelector('#form'),
+    //     input2 = form2.getElementsByTagName('input');
+
+    // form2.addEventListener('submit', function(event) {
+    //     event.preventDefault();
+    //     form2.appendChild(statusMessage);
+
+    //     let request = new XMLHttpRequest();
+    //     request.open('POST', 'server.php');
+    //     request.setRequestHeader('Content-type', 'application/json; charset=utf-8');
+
+    //     let formData = new FormData(form2);
+
+    //     let obj = {};
+    //     formData.forEach(function(value, key) {
+    //         obj[key] = value;
+    //     });
+
+    //     let json = JSON.stringify(obj);
+
+    //         request.send(json);
+
+    //         request.addEventListener('readystatechange', function() {
+    //             if (request.readyState < 4) {
+    //                 statusMessage.innerHTML = message.loading;
+    //             } else if (request.readyState === 4 && request.status == 200) {
+    //                 statusMessage.innerHTML = message.success;
+    //             } else {
+    //                 statusMessage.innerHTML = message.failure;
+    //             }
+    //         });
+
+    //     for (let i = 0; i < input2.length; i++) {
+    //         input2[i].value = '';
+    //     }    
+    // });
 
 });
 
